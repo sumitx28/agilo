@@ -1,5 +1,7 @@
 package org.agilo.configuration.auth;
 
+import org.agilo.utils.Constants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,6 +20,9 @@ import java.util.List;
 public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${development.url}")
+    private String DEVELOPMENT_URL;
 
     public SecurityConfiguration(
             JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -49,15 +54,11 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
-        configuration.setAllowedMethods(List.of("GET","POST"));
+        configuration.setAllowedOrigins(List.of(DEVELOPMENT_URL));
+        configuration.setAllowedMethods(List.of(Constants.ApiConstants.GET, Constants.ApiConstants.POST));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
         source.registerCorsConfiguration("/**",configuration);
-
         return source;
     }
 }
