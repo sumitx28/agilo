@@ -13,6 +13,6 @@ public class GlobalExceptionHandler {
                 .error(exception.getError())
                 .message(exception.getMessage())
                 .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorResponse, exception.getHttpStatus());
     }
 }
