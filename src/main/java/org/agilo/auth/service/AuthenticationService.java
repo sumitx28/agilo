@@ -1,7 +1,7 @@
 package org.agilo.auth.service;
 
 import org.agilo.auth.dto.LoginUserDto;
-import org.agilo.auth.dto.RegisterUserDto;
+import org.agilo.auth.dto.RegisterRequestDto;
 import org.agilo.auth.model.User;
 import org.agilo.auth.repository.UserRepository;
 import org.agilo.exception.Exception;
@@ -29,7 +29,7 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User signup(RegisterUserDto input) {
+    public User signup(RegisterRequestDto input) {
         User existingUser = userRepository.findByEmail(input.getEmail()).orElse(null);
         if (existingUser != null) {
             throw new Exception("DUPLICATE USER", "User with email " + input.getEmail() + " already exists", HttpStatus.BAD_REQUEST);

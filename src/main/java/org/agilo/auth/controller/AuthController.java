@@ -2,7 +2,8 @@ package org.agilo.auth.controller;
 
 import org.agilo.auth.dto.LoginResponse;
 import org.agilo.auth.dto.LoginUserDto;
-import org.agilo.auth.dto.RegisterUserDto;
+import org.agilo.auth.dto.RegisterRequestDto;
+import org.agilo.auth.dto.RegisterResponseDto;
 import org.agilo.auth.model.User;
 import org.agilo.auth.service.AuthenticationService;
 import org.agilo.auth.service.JwtService;
@@ -25,9 +26,14 @@ public class AuthController {
     }
 
     @PostMapping(AuthEndpoints.SIGNUP_ENDPOINT)
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
-        User registeredUser = authenticationService.signup(registerUserDto);
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterRequestDto registerRequestDto) {
+        User registeredUser = authenticationService.signup(registerRequestDto);
+        return ResponseEntity.ok(RegisterResponseDto.builder()
+                .id(registeredUser.getId())
+                .email(registeredUser.getEmail())
+                .createdAt(registeredUser.getCreatedAt())
+                .build()
+        );
     }
 
     @PostMapping(AuthEndpoints.LOGIN_ENDPOINT)
