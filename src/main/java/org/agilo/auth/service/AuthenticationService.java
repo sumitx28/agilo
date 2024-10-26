@@ -4,6 +4,8 @@ import org.agilo.auth.dto.LoginUserDto;
 import org.agilo.auth.dto.RegisterUserDto;
 import org.agilo.auth.model.User;
 import org.agilo.auth.repository.UserRepository;
+import org.agilo.exception.Exception;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,12 +30,15 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input) {
+        User existingUser = userRepository.findByEmail(input.getEmail()).orElse(null);
+        if (existingUser != null) {
+            throw new Exception("DUPLICATE USER", "User with email " + input.getEmail() + " already exists", HttpStatus.BAD_REQUEST);
+        }
         User user = User.builder()
                 .fullName(input.getFullName())
                 .email(input.getEmail())
                 .password(passwordEncoder.encode(input.getPassword()))
                 .build();
-
         return userRepository.save(user);
     }
 
