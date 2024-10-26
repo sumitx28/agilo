@@ -1,8 +1,9 @@
 package org.agilo.auth.controller;
 
-import org.agilo.auth.dto.LoginResponse;
-import org.agilo.auth.dto.LoginUserDto;
-import org.agilo.auth.dto.RegisterUserDto;
+import org.agilo.auth.dto.LoginResponseDto;
+import org.agilo.auth.dto.LoginRequestDto;
+import org.agilo.auth.dto.RegisterRequestDto;
+import org.agilo.auth.dto.RegisterResponseDto;
 import org.agilo.auth.model.User;
 import org.agilo.auth.service.AuthenticationService;
 import org.agilo.auth.service.JwtService;
@@ -25,16 +26,14 @@ public class AuthController {
     }
 
     @PostMapping(AuthEndpoints.SIGNUP_ENDPOINT)
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
-        User registeredUser = authenticationService.signup(registerUserDto);
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterRequestDto registerRequestDto) {
+        RegisterResponseDto registerResponseDto = authenticationService.signup(registerRequestDto);
+        return ResponseEntity.ok(registerResponseDto);
     }
 
     @PostMapping(AuthEndpoints.LOGIN_ENDPOINT)
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        User authenticatedUser = authenticationService.authenticate(loginUserDto);
-        String jwtToken = jwtService.generateToken(authenticatedUser);
-        LoginResponse loginResponse = LoginResponse.builder().token(jwtToken).expiresIn(jwtService.getExpirationTime()).build();
-        return ResponseEntity.ok(loginResponse);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+        LoginResponseDto loginResponseDto = authenticationService.login(loginRequestDto);
+        return ResponseEntity.ok(loginResponseDto);
     }
 }

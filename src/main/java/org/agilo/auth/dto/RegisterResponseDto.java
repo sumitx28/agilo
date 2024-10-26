@@ -5,11 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+import java.util.Date;
+import java.util.UUID;
+
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginUserDto {
+public class RegisterResponseDto {
+    private UUID id;
     private String email;
-    private String password;
+    private Date createdAt;
+    private String token;
+    private long expiresIn;
+
 }
