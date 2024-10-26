@@ -1,7 +1,7 @@
 package org.agilo.auth.controller;
 
-import org.agilo.auth.dto.LoginResponse;
-import org.agilo.auth.dto.LoginUserDto;
+import org.agilo.auth.dto.LoginResponseDto;
+import org.agilo.auth.dto.LoginRequestDto;
 import org.agilo.auth.dto.RegisterRequestDto;
 import org.agilo.auth.dto.RegisterResponseDto;
 import org.agilo.auth.model.User;
@@ -37,10 +37,8 @@ public class AuthController {
     }
 
     @PostMapping(AuthEndpoints.LOGIN_ENDPOINT)
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        User authenticatedUser = authenticationService.authenticate(loginUserDto);
-        String jwtToken = jwtService.generateToken(authenticatedUser);
-        LoginResponse loginResponse = LoginResponse.builder().token(jwtToken).expiresIn(jwtService.getExpirationTime()).build();
-        return ResponseEntity.ok(loginResponse);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+        LoginResponseDto loginResponseDto = authenticationService.login(loginRequestDto);
+        return ResponseEntity.ok(loginResponseDto);
     }
 }

@@ -1,10 +1,12 @@
 package org.agilo.auth.service;
 
-import org.agilo.auth.dto.LoginUserDto;
+import org.agilo.auth.dto.LoginRequestDto;
+import org.agilo.auth.dto.LoginResponseDto;
 import org.agilo.auth.dto.RegisterRequestDto;
 import org.agilo.auth.model.User;
 import org.agilo.auth.repository.UserRepository;
 import org.agilo.exception.Exception;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,19 +16,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public AuthenticationService(
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService
     ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public User signup(RegisterRequestDto input) {
@@ -42,7 +45,7 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
 
-    public User authenticate(LoginUserDto input) {
+    public User authenticate(LoginRequestDto input) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.getEmail(),
@@ -52,5 +55,11 @@ public class AuthenticationService {
 
         return userRepository.findByEmail(input.getEmail())
                 .orElseThrow();
+    }
+
+    public LoginResponseDto login(LoginRequestDto input) {
+        User currentUser = authenticate(input);
+        String jwtToken = jwtService.generateToken(currentUser);
+        return LoginResponseDto.builder().token(jwtToken).expiresIn(jwtService.getExpirationTime()).id(currentUser.getId()).email(currentUser.getEmail()).build();
     }
 }
