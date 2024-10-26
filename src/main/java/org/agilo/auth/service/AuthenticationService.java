@@ -3,6 +3,7 @@ package org.agilo.auth.service;
 import org.agilo.auth.dto.LoginRequestDto;
 import org.agilo.auth.dto.LoginResponseDto;
 import org.agilo.auth.dto.RegisterRequestDto;
+import org.agilo.auth.dto.RegisterResponseDto;
 import org.agilo.auth.model.User;
 import org.agilo.auth.repository.UserRepository;
 import org.agilo.exception.Exception;
@@ -32,17 +33,23 @@ public class AuthenticationService {
         this.jwtService = jwtService;
     }
 
-    public User signup(RegisterRequestDto input) {
+    public RegisterResponseDto signup(RegisterRequestDto input) {
         User existingUser = userRepository.findByEmail(input.getEmail()).orElse(null);
         if (existingUser != null) {
             throw new Exception("DUPLICATE USER", "User with email " + input.getEmail() + " already exists", HttpStatus.BAD_REQUEST);
         }
-        User user = User.builder()
+        User newUser = userRepository.save(User.builder()
                 .fullName(input.getFullName())
                 .email(input.getEmail())
                 .password(passwordEncoder.encode(input.getPassword()))
+                .build());
+        LoginResponseDto loginResponseDto = login(LoginRequestDto.builder().email(input.getEmail()).password(input.getPassword()).build());
+        return RegisterResponseDto.builder()
+                .id(newUser.getId())
+                .email(newUser.getEmail())
+                .token(loginResponseDto.getToken())
+                .expiresIn(loginResponseDto.getExpiresIn())
                 .build();
-        return userRepository.save(user);
     }
 
     public User authenticate(LoginRequestDto input) {

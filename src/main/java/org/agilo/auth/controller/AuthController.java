@@ -27,13 +27,8 @@ public class AuthController {
 
     @PostMapping(AuthEndpoints.SIGNUP_ENDPOINT)
     public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterRequestDto registerRequestDto) {
-        User registeredUser = authenticationService.signup(registerRequestDto);
-        return ResponseEntity.ok(RegisterResponseDto.builder()
-                .id(registeredUser.getId())
-                .email(registeredUser.getEmail())
-                .createdAt(registeredUser.getCreatedAt())
-                .build()
-        );
+        RegisterResponseDto registerResponseDto = authenticationService.signup(registerRequestDto);
+        return ResponseEntity.ok(registerResponseDto);
     }
 
     @PostMapping(AuthEndpoints.LOGIN_ENDPOINT)

@@ -16,4 +16,7 @@ public class RegisterResponseDto {
     private UUID id;
     private String email;
     private Date createdAt;
+    private String token;
+    private long expiresIn;
+
 }
